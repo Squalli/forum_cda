@@ -3,7 +3,6 @@
     
     use App\Manager;
     use App\DAO;
-    use Model\Entities\User;
 
     class UserManager extends Manager{
 
@@ -20,27 +19,31 @@
                     WHERE u.email = :email
                     ";
 
-            return DAO::select($sql, ['email' => $email]);
+            return $this->getSingleScalarResult(
+                DAO::select($sql, ['email' => $email], false)
+            );
         }
 
-        public function retrievePassword($username){
+        public function retrievePassword($email){
             $sql = "SELECT u.password
                     FROM ".$this->tableName." u
-                    WHERE u.username = :username
+                    WHERE u.email = :email
                     ";
 
-            return DAO::select($sql, ['username' => $username]);
+            return $this->getSingleScalarResult(
+                DAO::select($sql, ['email' => $email], false)
+            );
         }
 
-        public function findByUsername($username){
+        public function findByEmail($email){
 
-            $sql = "SELECT *
+            $sql = "SELECT id, username, email, registerdate
                     FROM ".$this->tableName." u
-                    WHERE u.username = :username
+                    WHERE u.email = :email
                     ";
 
             return $this->getOneOrNullResult(
-                DAO::select($sql, ['username' => $username], false), 
+                DAO::select($sql, ['email' => $email], false), 
                 $this->className
             );
         }

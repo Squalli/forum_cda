@@ -75,7 +75,9 @@
                         $results = $results[0];
                     }
                 }
-                else $results = $stmt->fetch();
+                else 
+                    $results = $stmt->fetch();
+
                 $stmt->closeCursor();
                 return ($results == false) ? null : $results;
             }
@@ -83,5 +85,4 @@
                 echo $e->getMessage();
             }
         }
-
     }

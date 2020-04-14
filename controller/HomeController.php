@@ -1,35 +1,33 @@
 <?php
+
+
     namespace Controller;
 
-    use App\Session;
+    use App\AbstractController;
+    use App\ControllerInterface;
     use Model\Managers\UserManager;
+    use Model\Managers\TopicManager;
     
-    class HomeController{
+    class HomeController extends AbstractController implements ControllerInterface{
 
         public function index(){
-            Session::authenticationRequired();
+            $this->restrictTo("ROLE_USER");
+            
+            $topicManager = new TopicManager();
+
             return [
                 "view" => VIEW_DIR."home.php",
                 "data" => [
-                    
-                ]
-            ];
-        }
-
-        public function secure(){
-            Session::authenticationRequired();
-            return [
-                "view" => VIEW_DIR."secure.php",
-                "data" => [
-                    
+                    "topics" => $topicManager->findAll(["creationdate", "DESC"])
                 ]
             ];
         }
 
         public function users(){
+            $this->restrictTo("ROLE_USER");
 
             $manager = new UserManager();
-            $users = $manager->findAll();
+            $users = $manager->findAll(['username', 'ASC']);
 
             return [
                 "view" => VIEW_DIR."users.php",

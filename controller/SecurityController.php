@@ -2,19 +2,21 @@
     namespace Controller;
 
     use App\Session;
+    use App\AbstractController;
+    use App\ControllerInterface;
     use Model\Managers\UserManager;
     
-    class SecurityController{
+    class SecurityController extends AbstractController implements ControllerInterface{
 
         public function index(){
 
-            return $this->login();
+            $this->redirectTo("security", "login");
         }
         
         public function login(){
             if(!empty($_POST)){
 
-                $username = filter_input(INPUT_POST, "username", FILTER_VALIDATE_REGEXP,
+                $email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_REGEXP,
                     array(
                         "options" => array("regexp"=>'/[A-Za-z0-9]{4,}/')
                     )
@@ -25,16 +27,15 @@
                     )
                 );
 
-                if($username && $pass){
+                if($email && $pass){
                     $manager = new UserManager();
-                    $dbPass = array_values($manager->retrievePassword($username));
-                    if(password_verify($pass, $dbPass[0])){
+                    $dbPass = $manager->retrievePassword($email);
+                    if(password_verify($pass, $dbPass)){
                         
-                        $user = $manager->findByUsername($username);
+                        $user = $manager->findByEmail($email);
                         Session::setUser($user);
                         Session::addFlash("success", "Vous êtes connectés, bienvenue !");
-                        header('Location:index.php');
-                        die();
+                        $this->redirectTo("home");
                     }
                     else{
                         Session::addFlash("error", "Le mot de passe est faux !");
@@ -51,7 +52,6 @@
         
         public function register(){
             if(!empty($_POST)){
-
                 $username = filter_input(INPUT_POST, "username", FILTER_VALIDATE_REGEXP,
                     array(
                         "options" => array("regexp"=>'/[A-Za-z0-9]{4,}/')
@@ -70,17 +70,14 @@
                         if($pass === $passrepeat){
                             //embeter la base de données
                             $manager = new UserManager();
-                            $tab = $manager->checkUserExists($email);  
-                            if(in_array(0, $tab)){
-                                $user = [
+                            if(!$manager->checkUserExists($email)){
+                                $manager->add([
                                     "username" => $username,
-                                    "email" => $email,
+                                    "email"    => $email,
                                     "password" => password_hash($pass, PASSWORD_ARGON2I),
-                                ];
-                                $manager->add($user); 
+                                ]); 
                                 Session::addFlash("success", "Inscription réussie, connectez-vous !");
-                                header('Location:index.php?ctrl=security&action=login');
-                                die();
+                                $this->redirectTo("security", "login");
                             }
                             else{
                                 Session::addFlash("error", "Cet e-mail existe déjà !");

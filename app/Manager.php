@@ -7,11 +7,21 @@
             DAO::connect();
         }
 
-        public function findAll(){
+        /**
+         * get all the records of a table, sorted by optionnal field and order
+         * 
+         * @param array $order an array with field and order option
+         * @return Collection a collection of objects hydrated by DAO, which are results of the request sent
+         */
+        public function findAll($order = null){
+
+            $orderQuery = ($order) ?                 
+                "ORDER BY ".$order[0]. " ".$order[1] :
+                "";
 
             $sql = "SELECT *
                     FROM ".$this->tableName." a
-                    ";
+                    ".$orderQuery;
 
             return $this->getMultipleResults(
                 DAO::select($sql), 
@@ -63,21 +73,28 @@
         
         protected function getMultipleResults($rows, $class){
 
-            $objects = [];
-
             if(!empty($rows)){
                 foreach($rows as $row){
-                    $objects[] = new $class($row);
+                    yield new $class($row);
                 }
             }
             
-            return $objects;
+            return;
         }
 
         protected function getOneOrNullResult($row, $class){
 
             if($row != null){
                 return new $class($row);
+            }
+            return false;
+        }
+
+        protected function getSingleScalarResult($row){
+
+            if($row != null){
+                $value = array_values($row);
+                return $value[0];
             }
             return false;
         }

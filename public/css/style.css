@@ -21,6 +21,19 @@ body{
     width: 100%;
 }
 
+table{
+    width: 100%;
+
+}
+
+table th{
+    background-color: #888;
+    color: #fff;
+}
+
+table tr:nth-child(even){
+    background-color: #ddd;
+}
 
 form{
     max-width: 600px;
@@ -33,11 +46,15 @@ form p{
     align-items: center;
 }
 
-form input, form select{
+form input:not([type="submit"]), form select{
     padding: 0.5em 0.2em;
+}
+form input:not([type="submit"]), form select{
     flex: 1;
 }
-
+form input[type='submit']{
+    padding: 0.5em;
+}
 footer{
     flex: 0;
 }
