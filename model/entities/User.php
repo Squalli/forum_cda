@@ -9,7 +9,7 @@
         private $username;
         private $email;
         private $registerdate;
-        private $roles = [];
+        private $roles;
 
         public function __construct($data){         
             $this->hydrate($data);        
@@ -28,7 +28,7 @@
         }
 
         public function setUsername($username){
-            $this->username = $username;
+            $this->username = ucfirst($username);
         }
 
         public function getEmail(){
@@ -50,14 +50,15 @@
         }
 
         public function getRoles(){
-            if(empty($this->roles)){
-                return ['ROLE_USER'];
-            }
             return $this->roles;
         }
-
-        public function setRoles($role){
-            $this->roles[] = $role;
+ 
+        public function setRoles($roles){
+            
+            $this->roles = json_decode($roles);
+            if(empty($this->roles)){
+                $this->roles[] = "ROLE_USER";
+            }
         }
 
         public function hasRole($role){

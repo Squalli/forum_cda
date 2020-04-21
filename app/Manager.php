@@ -42,7 +42,6 @@
             );
         }
 
-
         public function add($data){
             $keys = array_keys($data);
             $values = array_values($data);
@@ -60,26 +59,25 @@
         }
         
         public function delete($id){
-            $sql = "DELETE
-                    FROM ".$this->tableName." a
-                    WHERE a.id_".$this->tableName." = :id
+            $sql = "DELETE FROM ".$this->tableName."
+                    WHERE id_".$this->tableName." = :id
                     ";
 
-            return $this->getOneOrNullResult(
-                DAO::delete($sql, ['id' => $id], false), 
-                $this->className
-            );
+            return DAO::delete($sql, ['id' => $id]); 
+        }
+
+        private function generate($rows, $class){
+            foreach($rows as $row){
+                yield new $class($row);
+            }
         }
         
         protected function getMultipleResults($rows, $class){
 
-            if(!empty($rows)){
-                foreach($rows as $row){
-                    yield new $class($row);
-                }
+            if(is_iterable($rows)){
+                return $this->generate($rows, $class);
             }
-            
-            return;
+            else return null;
         }
 
         protected function getOneOrNullResult($row, $class){

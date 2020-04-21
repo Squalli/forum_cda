@@ -7,8 +7,13 @@
         
         public function redirectTo($ctrl = null, $action = null, $id = null){
 
-            $url = "index.php?ctrl=$ctrl&action=$action&id=$id";
-
+            if($ctrl != "home"){
+                $url = $ctrl ? "/".$ctrl : "";
+                $url.= $action ? "/".$action : "";
+                $url.= $id ? "/".$id : "";
+                $url.= ".html";
+            }
+            else $url = "/";
             header("Location: $url");
             die();
 
@@ -17,8 +22,7 @@
         public function restrictTo($role){
             
             if(!Session::getUser() || !Session::getUser()->hasRole($role)){
-                header("Location:index.php?ctrl=security&action=login");
-                die();
+                $this->redirectTo("security", "login");
             }
             return;
         }

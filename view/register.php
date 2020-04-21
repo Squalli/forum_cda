@@ -1,6 +1,6 @@
 
     <h1>Inscrivez-vous !</h1>
-    <form action="?ctrl=security&action=register" method="post">
+    <form action="/security/register.html" method="post">
         <p><input type="text" placeholder="Votre pseudo..." name="username" required></p>
         <p><input type="password" placeholder="Votre mot de passe..." name="pass" required></p>
         <p>

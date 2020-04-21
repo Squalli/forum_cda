@@ -5,7 +5,7 @@
     // meilleure portabilité sur les différents systêmes.
     define('BASE_DIR', dirname(__FILE__).DS); // pour se simplifier la vie
     define('VIEW_DIR', BASE_DIR."view/");     //le chemin où se trouvent les vues
-    define('PUBLIC_DIR', BASE_DIR."public/");     //le chemin où se trouvent les fichiers publics (CSS, JS, IMG)
+    define('PUBLIC_DIR', "/public");     //le chemin où se trouvent les fichiers publics (CSS, JS, IMG)
 
     define('DEFAULT_CTRL', 'home');//nom du contrôleur par défaut
 

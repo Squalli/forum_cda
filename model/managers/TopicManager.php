@@ -13,4 +13,13 @@
             parent::connect();
         }
 
+        public function lockTopic($idtopic, $closeState){
+            
+            $sql = "UPDATE topic SET closed = :close WHERE id_topic = :id";
+
+            return $this->getSingleScalarResult(
+                DAO::update($sql, ['close' => $closeState, 'id' => $idtopic])
+            );
+        }
+
     }

@@ -14,7 +14,7 @@
         }
 
         public function checkUserExists($email){
-            $sql = "SELECT COUNT(u.id)
+            $sql = "SELECT COUNT(u.id_user)
                     FROM ".$this->tableName." u
                     WHERE u.email = :email
                     ";
@@ -37,7 +37,7 @@
 
         public function findByEmail($email){
 
-            $sql = "SELECT id, username, email, registerdate
+            $sql = "SELECT id_user, username, email, registerdate, roles
                     FROM ".$this->tableName." u
                     WHERE u.email = :email
                     ";

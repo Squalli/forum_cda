@@ -40,7 +40,7 @@
             try{
                 $stmt = self::$bdd->prepare($sql);
                 $stmt->execute();
-                //on renvoit l'id de l'enregistrement qui vient d'être ajouté en base, 
+                //on renvoie l'id de l'enregistrement qui vient d'être ajouté en base, 
                 //pour s'en servir aussitôt dans le controleur
                 return self::$bdd->lastInsertId();
                 
@@ -49,10 +49,34 @@
                 echo $e->getMessage();
             }
         }
+
+        public static function update($sql, $params){
+            try{
+                $stmt = self::$bdd->prepare($sql);
+                
+                //on renvoie l'état du statement après exécution (true ou false)
+                return $stmt->execute($params);
+                
+            }
+            catch(\Exception $e){
+                
+                echo $e->getMessage();
+            }
+        }
         
-        public static function delete($sql){
-            
-            
+        public static function delete($sql, $params){
+            try{
+                $stmt = self::$bdd->prepare($sql);
+                
+                //on renvoie l'état du statement après exécution (true ou false)
+                return $stmt->execute($params);
+                
+            }
+            catch(\Exception $e){
+                echo $sql;
+                echo $e->getMessage();
+                die();
+            }
         }
 
         /**
@@ -69,14 +93,8 @@
             try{
                 $stmt = self::$bdd->prepare($sql);
                 $stmt->execute($params);
-                if($multiple){
-                    $results = $stmt->fetchAll();
-                    if(count($results) == 1){
-                        $results = $results[0];
-                    }
-                }
-                else 
-                    $results = $stmt->fetch();
+              
+                $results = ($multiple) ? $stmt->fetchAll() : $stmt->fetch();
 
                 $stmt->closeCursor();
                 return ($results == false) ? null : $results;

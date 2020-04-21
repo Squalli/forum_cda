@@ -72,9 +72,10 @@
                             $manager = new UserManager();
                             if(!$manager->checkUserExists($email)){
                                 $manager->add([
-                                    "username" => $username,
-                                    "email"    => $email,
+                                    "username" => strtolower($username),
+                                    "email"    => strtolower($email),
                                     "password" => password_hash($pass, PASSWORD_ARGON2I),
+                                    "roles"    => json_encode(['ROLE_USER'])
                                 ]); 
                                 Session::addFlash("success", "Inscription réussie, connectez-vous !");
                                 $this->redirectTo("security", "login");
@@ -103,7 +104,6 @@
         public function logout(){
             Session::setUser(null);
             Session::addFlash("success", "A bientôt !");
-            header('Location:index.php');
-            die();
+            $this->redirectTo("home");
         }
     }
