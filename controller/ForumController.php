@@ -37,7 +37,7 @@
             if(!empty($_POST)){
 
                 $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_STRING);
-                $firstpost = filter_input(INPUT_POST, "firstpost", FILTER_SANITIZE_STRING);
+                $firstpost = filter_input(INPUT_POST, "firstpost", FILTER_UNSAFE_RAW);
 
                 if($title && $firstpost){
                     $iduser = Session::getUser()->getId();
@@ -70,7 +70,7 @@
             
             if(!empty($_POST)){
 
-                $post = filter_input(INPUT_POST, "post", FILTER_SANITIZE_STRING);
+                $post = filter_input(INPUT_POST, "post", FILTER_UNSAFE_RAW);
 
                 if($post){
                     

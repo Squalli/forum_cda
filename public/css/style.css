@@ -39,7 +39,7 @@ body{
 
 table{
     width: 100%;
-
+    border-collapse: collapse;
 }
 
 table td{
@@ -62,7 +62,7 @@ table tr:nth-child(even){
 }
 
 table tr.topic-closed{
-    background-color: #ff6761;
+    background-color: #ff9793;
 }
 
 #topic-list td{
@@ -92,7 +92,7 @@ table tr.topic-closed{
 }
 
 #posts td{
-    border: 1px solid #ddd;
+    border-bottom: 4px solid #ddd;
 }
 
 .post-author{
@@ -104,8 +104,11 @@ table tr.topic-closed{
 .post-username{
    font-size: 1.2em;
    font-weight: bold;
+   margin: 0;
+   padding-bottom: 0.5em;
 }
 .post-date{
+    margin-top: 0.5rem;
     font-size: 0.8em;
     font-style: oblique;
 }
