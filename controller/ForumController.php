@@ -11,19 +11,34 @@
     class ForumController extends AbstractController implements ControllerInterface{
 
         public function index(){
-            
+            $this->restrictTo("ROLE_USER");
+
+            $topicManager = new TopicManager();
+
+            return [
+                "view" => VIEW_DIR."forum/listTopic.php",
+                "data" => [
+                    "topics" => $topicManager->findAll(["creationdate", "DESC"])
+                ]
+            ];
         }
+
         public function viewTopic($idtopic){
             $this->restrictTo("ROLE_USER");
             
             $topicManager = new TopicManager();
             $topic = $topicManager->findOneById($idtopic);
             
+            if($topic == null){
+                header("HTTP/1.0 404 Not Found");
+                die(); 
+            }
+
             $postManager = new PostManager();
             $posts = $postManager->findByTopic($idtopic);
 
             return [
-                "view" => VIEW_DIR."viewTopic.php",
+                "view" => VIEW_DIR."forum/viewTopic.php",
                 "data" => [
                     "topic" => $topic,
                     "posts" => $posts
@@ -61,7 +76,7 @@
             }
             
             return [
-                "view" => VIEW_DIR."newTopic.php"
+                "view" => VIEW_DIR."forum/newTopic.php"
             ];
         }
 
@@ -87,6 +102,8 @@
         }
 
         private function newPost($post, $idtopic){
+            $this->restrictTo("ROLE_USER");
+
             $postManager = new PostManager();
             //ajout du premier post grâce à l'id du topic récupérée
             if($postManager->add([
@@ -107,53 +124,71 @@
             $this->restrictTo("ROLE_USER");
             $postManager = new PostManager();
             $post = $postManager->findOneById($idpost);
-            if(!empty($_POST)){
+            if(Session::getUser() == $post->getUser() || Session::isAdmin()){
 
-                $newtext = filter_input(INPUT_POST, "newtext", FILTER_UNSAFE_RAW);
+                if(!empty($_POST)){
 
-                if($newtext){
-                    
-                    $postManager->updatePost($idpost, $newtext);
-                    
-                    Session::addFlash("success", "Message modifié !");
-                    $this->redirectTo("forum", "viewTopic", $post->getTopic()->getId());
+                    $newtext = filter_input(INPUT_POST, "newtext", FILTER_UNSAFE_RAW);
+
+                    if($newtext){
+                        
+                        $postManager->updatePost($idpost, $newtext);
+                        
+                        Session::addFlash("success", "Message modifié !");
+                        $this->redirectTo("forum", "viewTopic", $post->getTopic()->getId());
+                    }
+                    else{
+                        Session::addFlash("error", "Un problème est survenu, veuillez réessayer.");
+                    }
+                }
+                $topic = $post->getTopic();
+            
+                $posts = $postManager->findByTopic($topic->getId());
+
+                return [
+                    "view" => VIEW_DIR."forum/viewTopic.php",
+                    "data" => [
+                        "topic"        => $topic,
+                        "posts"        => $posts,
+                        "postIdToEdit" => $idpost
+                    ]
+                ];
+            }
+            else{
+                Session::addFlash("error", "Vous n'avez pas le droit de faire ça !");
+            }
+            $this->redirectTo("forum");
+        }
+
+        public function deleteTopic($idtopic){
+            $this->restrictTo("ROLE_USER");
+
+            $topicManager = new TopicManager();
+            $topic = $topicManager->findOneById($idtopic);
+            if(Session::getUser() == $topic->getUser() || Session::isAdmin()){
+                if($topicManager->delete($idtopic)){
+                    Session::addFlash("success", "Sujet supprimé !");
+                    $this->redirectTo("home");
                 }
                 else{
                     Session::addFlash("error", "Un problème est survenu, veuillez réessayer.");
                 }
             }
-            $topic = $post->getTopic();
-        
-            $posts = $postManager->findByTopic($topic->getId());
-
-            return [
-                "view" => VIEW_DIR."viewTopic.php",
-                "data" => [
-                    "topic"        => $topic,
-                    "posts"        => $posts,
-                    "postIdToEdit" => $idpost
-                ]
-            ];
-        }
-
-        public function deleteTopic($idtopic){
-            $this->restrictTo("ROLE_USER");
-            $topicManager = new TopicManager();
-            if($topicManager->delete($idtopic)){
-                Session::addFlash("success", "Sujet supprimé !");
-                $this->redirectTo("home");
+            else{
+                Session::addFlash("error", "Vous n'avez pas le droit de supprimer ce topic !");
             }
             $this->redirectTo("forum", "viewTopic", $idtopic);
         }
 
         public function lockTopic($idtopic){
-         
+            $this->restrictTo("ROLE_USER");
+
             if(isset($_GET['source'])){
                 $source = $_GET['source'];
             }
             $topicManager = new TopicManager();
             $topic = $topicManager->findOneById($idtopic);
-            if(Session::getUser() == $topic->getUser()){
+            if(Session::getUser() == $topic->getUser() || Session::isAdmin()){
                 $closeState = ($topic->getClosed() == 1) ? 0 : 1;
                 $topicManager->lockTopic($idtopic, $closeState);
                 $closeMsg = ($closeState == 1) ? "verrouillé" : "déverrouillé";

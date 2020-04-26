@@ -16,11 +16,7 @@
         public function login(){
             if(!empty($_POST)){
 
-                $email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_REGEXP,
-                    array(
-                        "options" => array("regexp"=>'/[A-Za-z0-9]{4,}/')
-                    )
-                );
+                $email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_EMAIL);
                 $pass = filter_input(INPUT_POST, "pass", FILTER_VALIDATE_REGEXP,
                     array(
                         "options" => array("regexp"=>'/[A-Za-z0-9]{6,32}/')
@@ -46,7 +42,7 @@
                 }
             }
             return [
-                "view" => VIEW_DIR."login.php"
+                "view" => VIEW_DIR."security/login.php"
             ];
         }
         
@@ -97,13 +93,32 @@
                 }
             }
             return [
-                "view" => VIEW_DIR."register.php"
+                "view" => VIEW_DIR."security/register.php"
             ];
         }
         
         public function logout(){
+            $this->restrictTo("ROLE_USER");
+
             Session::setUser(null);
             Session::addFlash("success", "A bientôt !");
             $this->redirectTo("home");
+        }
+
+        public function viewProfile($iduser = null){
+            $this->restrictTo("ROLE_USER");
+            
+            $userManager = new UserManager();
+            if($iduser !== null){
+                $user = $userManager->findOneById($iduser);
+            }
+            else $user = Session::getUser();
+
+            return [
+                "view" => VIEW_DIR."security/profile.php",
+                "data" => [
+                    "user" => $user
+                ]
+            ];
         }
     }

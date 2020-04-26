@@ -6,6 +6,11 @@ body{
     margin: 0;
 }
 
+header nav{
+    display: flex;
+    justify-content: space-between;
+}
+
 #wrapper{
     min-height: 100vh;
     padding: 2em;
@@ -99,7 +104,7 @@ table tr.topic-closed{
     background-color: #888;
     color: #fff;
     
-    max-width: 200px;
+    width: 20%;
 }
 .post-username{
    font-size: 1.2em;

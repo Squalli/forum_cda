@@ -8,6 +8,7 @@
     define('PUBLIC_DIR', "/public");     //le chemin où se trouvent les fichiers publics (CSS, JS, IMG)
 
     define('DEFAULT_CTRL', 'home');//nom du contrôleur par défaut
+    define('ADMIN_MAIL', "admin@gmail.com");//mail de l'administrateur
 
     require("app/Autoloader.php");
 

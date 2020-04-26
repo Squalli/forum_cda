@@ -42,13 +42,22 @@
             );
         }
 
+        //$data = ['username' => 'Squalli', 'password' => 'dfsyfshfbzeifbqefbq', 'email' => 'sql@gmail.com'];
+
         public function add($data){
+            //$keys = ['username' , 'password', 'email']
             $keys = array_keys($data);
+            //$values = ['Squalli', 'dfsyfshfbzeifbqefbq', 'sql@gmail.com']
             $values = array_values($data);
+            //"username,password,email"
             $sql = "INSERT INTO ".$this->tableName."
-                    (".implode(',', $keys).")
+                    (".implode(',', $keys).") 
                     VALUES
                     ('".implode("','",$values)."')";
+                    //"'Squalli', 'dfsyfshfbzeifbqefbq', 'sql@gmail.com'"
+            /*
+                INSERT INTO user (username,password,email) VALUES ('Squalli', 'dfsyfshfbzeifbqefbq', 'sql@gmail.com') 
+            */
             try{
                 return DAO::insert($sql);
             }

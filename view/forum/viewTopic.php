@@ -9,12 +9,27 @@
     <p><a href="/">Retour à la liste des sujets</a></p>
     <h1><?= ($topic->getClosed()) ? "(Verrouillé)&nbsp;" : "" ?><?= $topic->getTitle() ?></h1>
     <p>
-        <em>Par <?= $topic->getUser()->getUsername()?>, le <?= $topic->getCreationdate("d/m/Y")?></em>
+        <em>
+            Par 
+            <a href="/security/viewProfile/<?= $topic->getUser()->getId() ?>.html">
+                <?= $topic->getUser() ?>
+            </a>, 
+            le <?= $topic->getCreationdate("d/m/Y")?>
+        </em>
         <div class="actions"> 
             <?php
                 if(App\Session::getUser() == $topic->getUser() || App\Session::isAdmin()){
                     ?>
-                        <a class="action-btn" href="/forum/lockTopic/<?= $topic->getId() ?>.html"><span class="fas fa-lock"></span></a>
+                        <a class="action-btn" href="/forum/lockTopic/<?= $topic->getId() ?>.html">
+                            <?= ($topic->getClosed()) ? 
+                                "<span class='fas fa-unlock'></span>&nbsp;Déverrouiller" : 
+                                "<span class='fas fa-lock'></span>&nbsp;Verrouiller" 
+                            ?>
+                            
+                        </a>
+                        <a class="action-btn delete-btn" href="/forum/deleteTopic/<?= $topic->getId() ?>.html" title="Supprimer">
+                            <span class="fas fa-times"></span>&nbsp;Supprimer
+                        </a>
                     <?php
                 }
             ?>
@@ -31,10 +46,19 @@
             ?>
             <tr>
                 <td class="post-author">
-                    <p class="post-username"><?= $post->getUser()?></p>
+                
+                    <p class="post-username">
+                        <a href="/security/viewProfile/<?= $post->getUser()->getId() ?>.html">
+                            <?= $post->getUser() ?>
+                        </a>
+                    </p>
                     <p class="post-date"><?= $post->getCreationdate()?></p>
+                    
                 </td>
                 <td class="post-text">
+                    <?php
+                        if(App\Session::getUser() == $post->getUser() || App\Session::isAdmin()){
+                    ?>
                     <div class="actions">
                         <a class="action-btn" href="/forum/editPost/<?= $post->getId()?>.html">
                             <span class="fas fa-edit"></span>
@@ -43,6 +67,9 @@
                             <span class="fas fa-times"></span>
                         </a>
                     </div>
+                    <?php
+                    }
+                ?>
                 <?php
                     if($postIdToEdit === $post->getId()){
                         ?>
